@@ -22,7 +22,7 @@ function LoginForm( { values, errors, touched } ) {
         <Field type="checkbox" name="tos" checked={values.tos} />
         Agree to Terms of Service?
       </label>
-      <button>Submit!</button>
+      <button type='submit'>Submit!</button>
     </Form>
   );
 }
@@ -50,9 +50,22 @@ const FormikLoginForm = withFormik({
   }),
   //======END VALIDATION SCHEMA==========
 
-  handleSubmit(values) {
-    console.log(values);
-    //THIS IS WHERE YOU DO YOUR FORM SUBMISSION CODE... HTTP REQUESTS, ETC.
+  handleSubmit(values, { resetForm, setErrors, setSubmitting }) {
+    if (values.email === "waffle@syrup.com") {
+      setErrors({ email: "That email is already taken" });
+    } else {
+      axios
+        .post("https://reqres.in/api/users", values)
+        .then(res => {
+          console.log(res); // Data was created successfully and logs to console
+          resetForm();
+          setSubmitting(false);
+        })
+        .catch(err => {
+          console.log(err); // There was an error creating the data and logs to console
+          setSubmitting(false);
+        });
+    }
   }
 })(LoginForm);
 
